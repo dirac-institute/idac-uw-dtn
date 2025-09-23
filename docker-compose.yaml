@@ -1,0 +1,40 @@
+services:
+  shire:
+    build:
+      context: .
+      dockerfile: Dockerfile.shire
+    hostname: shire
+    container_name: shire
+    volumes:
+      - ./data:/data:rw
+    networks:
+      - xrootd-net
+  
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    hostname: client
+    container_name: client
+    command: sleep infinity
+    networks:
+      - xrootd-net
+
+  rohan:
+    build:
+      context: .
+      dockerfile: Dockerfile.rohan
+    hostname: rohan
+    container_name: rohan
+    networks:
+      - xrootd-net
+    depends_on:
+      - shire
+
+networks:
+  xrootd-net:
+    driver: bridge
+
+volumes:
+  data:
+    driver: local
