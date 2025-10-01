@@ -17,15 +17,9 @@ openssl req -new -x509 -key "$CA_DIR/ca.key" -out "$CA_DIR/ca.crt" -days 365 -su
 SUBJECT_HASH=$(openssl x509 -in "$CA_DIR/ca.crt" -noout -subject_hash)
 cp "$CA_DIR/ca.crt" "$CA_DIR/${SUBJECT_HASH}.0"
 
-# Generate Rohan certificate (proxy server)
-openssl genrsa -out "$CERTS_DIR/rohan.key" 2048
-openssl req -new -key "$CERTS_DIR/rohan.key" -out "$CERTS_DIR/rohan.csr" -subj "/C=US/ST=DevState/L=DevCity/O=DevOrg/OU=DevUnit/CN=rohan" 
-openssl x509 -req -in "$CERTS_DIR/rohan.csr" -CA "$CA_DIR/ca.crt" -CAkey "$CA_DIR/ca.key" -CAcreateserial -out "$CERTS_DIR/rohan.crt" -days 365 -extensions v3_req -extfile ./rohan_cert.cfg
-
-# Generate client certificate for testing
-openssl genrsa -out "$CERTS_DIR/client.key" 2048
-openssl req -new -key "$CERTS_DIR/client.key" -out "$CERTS_DIR/client.csr" -subj "/C=US/ST=DevState/L=DevCity/O=DevOrg/OU=DevUnit/CN=testuser"
-openssl x509 -req -in "$CERTS_DIR/client.csr" -CA "$CA_DIR/ca.crt" -CAkey "$CA_DIR/ca.key" -CAcreateserial -out "$CERTS_DIR/client.crt" -days 365 -extensions v3_req -extfile ./client_cert.cfg
+./generate_cert.sh rohan
+./generate_cert.sh client
+./generate_cert.sh rohan.astro.washington.edu
 
 # Clean up CSRs
 #rm -f "$CERTS_DIR"/*.csr
